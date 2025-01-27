@@ -5,8 +5,8 @@ import os
 # The path of the stubs is relative to the current file, or absolute inside the container.
 # Change these lines only if strictly needed.
 FILE = __file__ if '__file__' in globals() else os.getenv("PYTHONFILE", "")
-utils_path = os.path.abspath(os.path.join(FILE, '../../../utils/pb/fraud_detection'))
-sys.path.insert(0, utils_path)
+fraud_detection_grpc_path = os.path.abspath(os.path.join(FILE, '../../../utils/pb/fraud_detection'))
+sys.path.insert(0, fraud_detection_grpc_path)
 import fraud_detection_pb2 as fraud_detection
 import fraud_detection_pb2_grpc as fraud_detection_grpc
 
@@ -27,11 +27,12 @@ def greet(name='you'):
 # For more information, see https://flask.palletsprojects.com/en/latest/
 from flask import Flask, request
 from flask_cors import CORS
+import json
 
 # Create a simple Flask app.
 app = Flask(__name__)
 # Enable CORS for the app.
-CORS(app)
+CORS(app, resources={r'/*': {'origins': '*'}})
 
 # Define a GET endpoint.
 @app.route('/', methods=['GET'])
@@ -49,16 +50,18 @@ def checkout():
     """
     Responds with a JSON object containing the order ID, status, and suggested books.
     """
+    # Get request object data to json
+    request_data = json.loads(request.data)
     # Print request object data
-    print("Request Data:", request.json)
+    print("Request Data:", request_data.get('items'))
 
     # Dummy response following the provided YAML specification for the bookstore
     order_status_response = {
         'orderId': '12345',
         'status': 'Order Approved',
         'suggestedBooks': [
-            {'bookId': '123', 'title': 'Dummy Book 1', 'author': 'Author 1'},
-            {'bookId': '456', 'title': 'Dummy Book 2', 'author': 'Author 2'}
+            {'bookId': '123', 'title': 'The Best Book', 'author': 'Author 1'},
+            {'bookId': '456', 'title': 'The Second Best Book', 'author': 'Author 2'}
         ]
     }
 
