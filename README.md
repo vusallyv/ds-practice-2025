@@ -41,6 +41,6 @@ backend services:
 - requirements.txt dependencies from each service
 
 frontend service:
-- node.js, npm (or any other package manager)
+- It's a simple static HTML page, you can open `frontend/src/index.html` in your browser.
 
 And then run each service individually.
