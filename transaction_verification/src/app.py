@@ -42,7 +42,7 @@ class TransactionService(transaction_verification_grpc.TransactionServiceService
         response.is_fraud = is_fraud
         # Set the is_fraud field of the response object
         print("Response from Transaction Verification:")
-        print(response.is_fraud)
+        print("Success" if is_fraud == "False" else "Failed")
         # Return the response object
         return response
 

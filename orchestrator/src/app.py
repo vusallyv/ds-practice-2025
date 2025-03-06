@@ -119,7 +119,7 @@ def checkout():
 
     print("Verifying transaction...")
     response = verify_transaction(data=request_data)
-    print("Transaction verified:", response)
+    print("Transaction verified:", "Failed" if response != "False" else "Success")
     if response != "False":
         return {'error': response}
 
