@@ -8,8 +8,12 @@ service HelloService {
 
 message HelloRequest {
     string name = 1;
+    string credit_card_number = 2;
+    string credit_card_expiration_date = 3;
+    string user_comment = 4;
+    string items_length = 5;
 }
 
 message HelloResponse {
-    string greeting = 1;
+    string is_fraud = 1;
 }

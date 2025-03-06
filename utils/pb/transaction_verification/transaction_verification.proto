@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package transaction_verification;
+
+service TransactionService {
+    rpc SayTransaction (TransactionRequest) returns (TransactionResponse);
+}
+
+message TransactionRequest {
+    string name = 1;
+    string contact = 2;
+    string items_length = 3;
+    string credit_card_number = 4;
+    string credit_card_expiration_date = 5;
+}
+
+message TransactionResponse {
+    string is_fraud = 1;
+}

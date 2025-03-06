@@ -122,8 +122,8 @@
 
                 const result = await response.json();
                 const responseDiv = document.getElementById('response');
-
-                if (response.ok) {
+                
+                if (!result.error) {
                     const suggestedBooks = result.suggestedBooks.map(book => `<li>${book.title} by ${book.author}</li>`).join('');
                     responseDiv.innerHTML = `
                         <strong>Order status: ${result.status}</strong><br>
@@ -137,7 +137,7 @@
                     color = result.status === 'Order Approved' ? 'green' : 'red';
                     responseDiv.className = `mt-6 p-4 border rounded-lg bg-${color}-100 text-${color}-700`;
                 } else {
-                    responseDiv.textContent = `Error: ${result.error.message}`;
+                    responseDiv.textContent = `Error: ${result.error}`;
                     responseDiv.className = "mt-6 p-4 border rounded-lg bg-red-100 text-red-700";
                 }
 
