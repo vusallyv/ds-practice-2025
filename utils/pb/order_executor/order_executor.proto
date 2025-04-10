@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+service OrderExecutor {
+  rpc Start(ExecutorStartRequest) returns (ExecutorStartResponse);
+}
+
+message ExecutorStartRequest {}
+
+message ExecutorStartResponse {
+  string status = 1;
+}

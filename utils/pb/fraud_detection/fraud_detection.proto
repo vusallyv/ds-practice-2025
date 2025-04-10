@@ -1,19 +1,22 @@
 syntax = "proto3";
 
-package hello;
+package fraud_verification;
 
-service HelloService {
-    rpc SayHello (HelloRequest) returns (HelloResponse);
+service FraudService {
+    rpc detect (FraudRequest) returns (FraudResponse);
 }
 
-message HelloRequest {
-    string name = 1;
-    string credit_card_number = 2;
-    string credit_card_expiration_date = 3;
-    string user_comment = 4;
-    string items_length = 5;
+message FraudRequest {
+  string order_id = 1;
+  string name = 2;
+  string credit_card_number = 3;
+  string credit_card_expiration_date = 4;
+  string user_comment = 5;
+  string items_length = 6;
+  map<string, int32> vector_clock = 7;
 }
 
-message HelloResponse {
-    string is_fraud = 1;
+message FraudResponse {
+    string is_fraud = 1;                        // "False" means success, otherwise an error message.
+    map<string, int32> vector_clock = 2;          // Updated vector clock.
 }

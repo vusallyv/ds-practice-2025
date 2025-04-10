@@ -14,8 +14,8 @@ class SuggestionsServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SaySuggestions = channel.unary_unary(
-                '/hello.SuggestionsService/SaySuggestions',
+        self.suggest = channel.unary_unary(
+                '/suggestions.SuggestionsService/suggest',
                 request_serializer=suggestions__pb2.SuggestionsRequest.SerializeToString,
                 response_deserializer=suggestions__pb2.SuggestionsResponse.FromString,
                 )
@@ -24,7 +24,7 @@ class SuggestionsServiceStub(object):
 class SuggestionsServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def SaySuggestions(self, request, context):
+    def suggest(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -33,14 +33,14 @@ class SuggestionsServiceServicer(object):
 
 def add_SuggestionsServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SaySuggestions': grpc.unary_unary_rpc_method_handler(
-                    servicer.SaySuggestions,
+            'suggest': grpc.unary_unary_rpc_method_handler(
+                    servicer.suggest,
                     request_deserializer=suggestions__pb2.SuggestionsRequest.FromString,
                     response_serializer=suggestions__pb2.SuggestionsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'hello.SuggestionsService', rpc_method_handlers)
+            'suggestions.SuggestionsService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -49,7 +49,7 @@ class SuggestionsService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def SaySuggestions(request,
+    def suggest(request,
             target,
             options=(),
             channel_credentials=None,
@@ -59,7 +59,7 @@ class SuggestionsService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/hello.SuggestionsService/SaySuggestions',
+        return grpc.experimental.unary_unary(request, target, '/suggestions.SuggestionsService/suggest',
             suggestions__pb2.SuggestionsRequest.SerializeToString,
             suggestions__pb2.SuggestionsResponse.FromString,
             options, channel_credentials,

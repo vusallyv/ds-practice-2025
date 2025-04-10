@@ -17,12 +17,12 @@ import grpc  # noqa: E402
 from concurrent import futures  # noqa: E402
 
 # Create a class to define the server functions, derived from
-# fraud_detection_pb2_grpc.HelloServiceServicer
+# fraud_detection_pb2_grpc.FraudServiceServicer
 
 
-class HelloService(fraud_detection_grpc.HelloServiceServicer):
+class FraudService(fraud_detection_grpc.FraudServiceServicer):
     # Create an RPC function to say hello
-    def SayHello(self, request, context):
+    def detect(self, request, context):
         # Create a HelloResponse object
         try:
             GOOGLE_API_KEY = 'AIzaSyDobw3uI4_ioNYjNzYCK5QqZumIpbiwRcY'
@@ -39,7 +39,7 @@ class HelloService(fraud_detection_grpc.HelloServiceServicer):
             print("Error in generating response from Gemini.")
             print(e)
             is_fraud = "False"
-        response = fraud_detection.HelloResponse()
+        response = fraud_detection.FraudResponse()
         response.is_fraud = is_fraud
         return response
 
@@ -47,9 +47,9 @@ class HelloService(fraud_detection_grpc.HelloServiceServicer):
 def serve():
     # Create a gRPC server
     server = grpc.server(futures.ThreadPoolExecutor())
-    # Add HelloService
-    fraud_detection_grpc.add_HelloServiceServicer_to_server(
-        HelloService(), server)
+    # Add FraudService
+    fraud_detection_grpc.add_FraudServiceServicer_to_server(
+        FraudService(), server)
     # Listen on port 50051
     port = "50051"
     server.add_insecure_port("[::]:" + port)

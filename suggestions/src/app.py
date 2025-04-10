@@ -5,9 +5,7 @@ import os
 import re
 import google.generativeai as genai
 
-# This set of lines are needed to import the gRPC stubs.
-# The path of the stubs is relative to the current file, or absolute inside the container.
-# Change these lines only if strictly needed.
+# Set up the path for the gRPC stubs.
 FILE = __file__ if '__file__' in globals() else os.getenv("PYTHONFILE", "")
 suggestions_grpc_path = os.path.abspath(
     os.path.join(FILE, '../../../utils/pb/suggestions'))
@@ -15,7 +13,7 @@ sys.path.insert(0, suggestions_grpc_path)
 import suggestions_pb2_grpc as suggestions_grpc  # noqa: E402
 import suggestions_pb2 as suggestions  # noqa: E402
 
-
+# Global list of available books.
 BOOKS = [
     {"title": "1984", "author": "George Orwell", "book_id": 1},
     {"title": "Animal Farm", "author": "George Orwell", "book_id": 2},
@@ -31,54 +29,63 @@ BOOKS = [
     {"title": "The Little Prince", "author": "Antoine de Saint-Exupéry", "book_id": 12},
 ]
 
-# Create a class to define the server functions, derived from
-# suggestions_pb2_grpc.SuggestionsServiceServicer
-
 
 class SuggestionsService(suggestions_grpc.SuggestionsServiceServicer):
-    # Create an RPC function to say hello
-    def SaySuggestions(self, request, context):
-        # Create a SuggestionsResponse object
-        response = suggestions.SuggestionsResponse()
-        # Set the suggestions field of the response object
+    def suggest(self, request, context):
+        # Retrieve the order ID.
+        order_id = request.order_id if hasattr(
+            request, "order_id") else "unknown_order"
+        print(f"Suggestions service processing order: {order_id}")
 
+        # Retrieve and update the vector clock.
+        # Instead of iterating over the VectorClock object, iterate over its 'clock' field.
+        vc = dict(request.vector_clock.clock)
+        vc["SUG"] = vc.get("SUG", 0) + 1
+        print(f"Updated vector clock in Suggestions service: {vc}")
+
+        # Generate suggestions using Google Generative AI.
         try:
             GOOGLE_API_KEY = 'AIzaSyDobw3uI4_ioNYjNzYCK5QqZumIpbiwRcY'
             genai.configure(api_key=GOOGLE_API_KEY)
-            model = genai.GenerativeModel("gemini-1.5-pro")
-            prompt = f"User purchased {request.books.split(',')}."
-            prompt += f"Please suggest some books based on the user's purchase from {BOOKS} and only return the suggestions like this:"
-            prompt += "The suggestions are: Book1 by Author1, Book2 by Author2, Book3 by Author3"
-            gemini_response = model.generate_content(prompt)
+            purchased_books = request.books.split(',')
+            prompt = (
+                f"User purchased {purchased_books}. Based on this purchase and our available books: {BOOKS}, "
+                "please suggest three books in the format: 'Book1 by Author1, Book2 by Author2, Book3 by Author3'."
+            )
+            gemini_response = genai.GenerativeModel(
+                "gemini-1.5-pro").generate_content(prompt)
             print("Response from Gemini:")
             print(gemini_response.text)
-            book_suggestions = re.search(r'The suggestions are:(.*)', gemini_response.text, re.DOTALL)
-            book_suggestions = book_suggestions.group(1)
-            print(book_suggestions)
+            match = re.search(r'The suggestions are:(.*)',
+                              gemini_response.text, re.DOTALL)
+            if match:
+                book_suggestions = match.group(1).strip()
+            else:
+                book_suggestions = ""
         except Exception as e:
             print("Error in generating response from Gemini.")
             print(e)
             book_suggestions = ""
-        # Print the suggestions message
-        # Set the suggestions field of the response object
+
+        # Create and populate the SuggestionsResponse.
+        response = suggestions.SuggestionsResponse()
         response.suggestions = book_suggestions
-        # Return the response object
+        # Update the inner 'clock' field of the vector clock in the response.
+        for key, value in vc.items():
+            response.vector_clock.clock[key] = value
         return response
 
 
 def serve():
-    # Create a gRPC server
+    # Create a gRPC server.
     server = grpc.server(futures.ThreadPoolExecutor())
-    # Add SuggestionsService
     suggestions_grpc.add_SuggestionsServiceServicer_to_server(
         SuggestionsService(), server)
-    # Listen on port 50053
+    # Listen on port 50053.
     port = "50053"
     server.add_insecure_port("[::]:" + port)
-    # Start the server
     server.start()
-    print("Server started. Listening on port 50053.")
-    # Keep thread alive
+    print("Suggestions service started. Listening on port 50053.")
     server.wait_for_termination()
 
 

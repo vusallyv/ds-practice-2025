@@ -13,7 +13,7 @@ import typing
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing.final
-class FraudRequest(google.protobuf.message.Message):
+class TransactionRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     @typing.final
@@ -36,17 +36,18 @@ class FraudRequest(google.protobuf.message.Message):
     NAME_FIELD_NUMBER: builtins.int
     CREDIT_CARD_NUMBER_FIELD_NUMBER: builtins.int
     CREDIT_CARD_EXPIRATION_DATE_FIELD_NUMBER: builtins.int
-    USER_COMMENT_FIELD_NUMBER: builtins.int
     ITEMS_LENGTH_FIELD_NUMBER: builtins.int
     VECTOR_CLOCK_FIELD_NUMBER: builtins.int
     order_id: builtins.str
+    """Unique OrderID from the orchestrator."""
     name: builtins.str
     credit_card_number: builtins.str
     credit_card_expiration_date: builtins.str
-    user_comment: builtins.str
     items_length: builtins.str
     @property
-    def vector_clock(self) -> google.protobuf.internal.containers.ScalarMap[builtins.str, builtins.int]: ...
+    def vector_clock(self) -> google.protobuf.internal.containers.ScalarMap[builtins.str, builtins.int]:
+        """Vector clock for event ordering."""
+
     def __init__(
         self,
         *,
@@ -54,16 +55,15 @@ class FraudRequest(google.protobuf.message.Message):
         name: builtins.str = ...,
         credit_card_number: builtins.str = ...,
         credit_card_expiration_date: builtins.str = ...,
-        user_comment: builtins.str = ...,
         items_length: builtins.str = ...,
         vector_clock: collections.abc.Mapping[builtins.str, builtins.int] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["credit_card_expiration_date", b"credit_card_expiration_date", "credit_card_number", b"credit_card_number", "items_length", b"items_length", "name", b"name", "order_id", b"order_id", "user_comment", b"user_comment", "vector_clock", b"vector_clock"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["credit_card_expiration_date", b"credit_card_expiration_date", "credit_card_number", b"credit_card_number", "items_length", b"items_length", "name", b"name", "order_id", b"order_id", "vector_clock", b"vector_clock"]) -> None: ...
 
-global___FraudRequest = FraudRequest
+global___TransactionRequest = TransactionRequest
 
 @typing.final
-class FraudResponse(google.protobuf.message.Message):
+class TransactionResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     @typing.final
@@ -85,11 +85,8 @@ class FraudResponse(google.protobuf.message.Message):
     IS_FRAUD_FIELD_NUMBER: builtins.int
     VECTOR_CLOCK_FIELD_NUMBER: builtins.int
     is_fraud: builtins.str
-    """"False" means success, otherwise an error message."""
     @property
-    def vector_clock(self) -> google.protobuf.internal.containers.ScalarMap[builtins.str, builtins.int]:
-        """Updated vector clock."""
-
+    def vector_clock(self) -> google.protobuf.internal.containers.ScalarMap[builtins.str, builtins.int]: ...
     def __init__(
         self,
         *,
@@ -98,4 +95,4 @@ class FraudResponse(google.protobuf.message.Message):
     ) -> None: ...
     def ClearField(self, field_name: typing.Literal["is_fraud", b"is_fraud", "vector_clock", b"vector_clock"]) -> None: ...
 
-global___FraudResponse = FraudResponse
+global___TransactionResponse = TransactionResponse

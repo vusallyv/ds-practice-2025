@@ -14,8 +14,8 @@ class TransactionServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SayTransaction = channel.unary_unary(
-                '/transaction_verification.TransactionService/SayTransaction',
+        self.verify = channel.unary_unary(
+                '/transaction_verification.TransactionService/verify',
                 request_serializer=transaction_verification__pb2.TransactionRequest.SerializeToString,
                 response_deserializer=transaction_verification__pb2.TransactionResponse.FromString,
                 )
@@ -24,7 +24,7 @@ class TransactionServiceStub(object):
 class TransactionServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def SayTransaction(self, request, context):
+    def verify(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -33,8 +33,8 @@ class TransactionServiceServicer(object):
 
 def add_TransactionServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SayTransaction': grpc.unary_unary_rpc_method_handler(
-                    servicer.SayTransaction,
+            'verify': grpc.unary_unary_rpc_method_handler(
+                    servicer.verify,
                     request_deserializer=transaction_verification__pb2.TransactionRequest.FromString,
                     response_serializer=transaction_verification__pb2.TransactionResponse.SerializeToString,
             ),
@@ -49,7 +49,7 @@ class TransactionService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def SayTransaction(request,
+    def verify(request,
             target,
             options=(),
             channel_credentials=None,
@@ -59,7 +59,7 @@ class TransactionService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/transaction_verification.TransactionService/SayTransaction',
+        return grpc.experimental.unary_unary(request, target, '/transaction_verification.TransactionService/verify',
             transaction_verification__pb2.TransactionRequest.SerializeToString,
             transaction_verification__pb2.TransactionResponse.FromString,
             options, channel_credentials,

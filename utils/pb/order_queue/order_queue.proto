@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service OrderQueue {
+  rpc Enqueue(QueueOrderRequest) returns (QueueOrderResponse);
+}
+
+message QueueOrderRequest {
+  string order_id = 1;
+  string payload = 2;
+  map<string, int32> vector_clock = 3;
+}
+
+message QueueOrderResponse {
+  string status = 1;
+}
