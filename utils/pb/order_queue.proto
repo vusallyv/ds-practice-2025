@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package queue;
+
+import "common.proto";
+
+service OrderQueueService {
+    rpc Enqueue(common.ItemsInitRequest) returns (common.Empty);
+    rpc Dequeue(common.Empty) returns (common.ItemsInitRequest);
+}
+
+service LeaderElectionService {
+    rpc DeclareElection(LeaderRequest) returns (common.Empty);
+    rpc DeclareVictory(LeaderRequest) returns (common.Empty);
+}
+
+message LeaderRequest {
+    string sender_id = 1;
+}

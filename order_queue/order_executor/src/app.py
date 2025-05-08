@@ -45,7 +45,8 @@ class OrderExecutorService:
                 leader_channel)
             try:
                 leader_election_stub.DeclareVictory(
-                    order_queue.LeaderRequest(sender_id=self.executor_id), timeout=1)
+                    order_queue.LeaderRequest(
+                        sender_id=self.executor_id), timeout=1)
                 return True
             except Exception:
                 return False
@@ -64,85 +65,25 @@ class OrderExecutorService:
                 self.send_declare_victory(id)
 
     def two_phase_commit(self, order_id: str, title: str, amount: int, participants: list[common_grpc.TransactionServiceStub]) -> bool:
-        # Store transaction state for recovery
-        transaction_state = {
-            "order_id": order_id,
-            "title": title,
-            "amount": amount,
-            "phase": "prepare",
-            "ready_participants": []
-        }
-
-        # Prepare phase
+        # Prepare
         ready_votes = []
-        for i, service in enumerate(participants):
-            retry_count = 3  # Allow up to 3 retries for prepare phase
-            while retry_count > 0:
-                try:
-                    if retry_count == 3:
-                        # fail simulation
-                        raise Exception("Simulated failure")
-                    response = service.Prepare(common.PrepareRequest(
-                        order_id=order_id, amount=amount, title=title), timeout=2)
-                    ready_votes.append(response.ready)
-                    if response.ready:
-                        transaction_state["ready_participants"].append(i)
-                    break
-                except Exception as e:
-                    print(f"Prepare phase failed for participant {i}: {e}")
-                    retry_count -= 1
-                    if retry_count == 0:
-                        ready_votes.append(False)
-                    time.sleep(0.5)  # Brief backoff before retry
-
-        # Decision phase
+        for service in participants:
+            try:
+                response = service.Prepare(common.PrepareRequest(
+                    order_id=order_id, amount=amount, title=title))
+                ready_votes.append(response.ready)
+            except Exception:
+                ready_votes.append(False)
         if all(ready_votes):
-            transaction_state["phase"] = "commit"
-            commit_success = []
-
-            # Attempt to commit on all ready participants
-            for i, service in enumerate(participants):
-                if i in transaction_state["ready_participants"]:
-                    retry_count = 3
-                    while retry_count > 0:
-                        try:
-                            if retry_count == 3:
-                                # fail simulation
-                                raise Exception("Simulated failure")
-                            service.Commit(common.CommitRequest(
-                                order_id=order_id, title=title), timeout=2)
-                            commit_success.append(True)
-                            break
-                        except Exception as e:
-                            print(
-                                f"Commit phase failed for participant {i}: {e}")
-                            retry_count -= 1
-                            if retry_count == 0:
-                                commit_success.append(False)
-                            time.sleep(0.5)
-
-            # If any commits failed, we have a partial commit situation
-            # In a real system, we would need to handle this with a recovery coordinator
-            if not all(commit_success):
-                print(
-                    f"WARNING: Partial commit for order {order_id}. Recovery needed.")
-                # In production: store transaction_state persistently and initiate recovery
-
-            print(f"Transaction successfully committed for order {order_id}")
+            for service in participants:
+                service.Commit(common.CommitRequest(
+                    order_id=order_id, title=title))
+            print("All services commited")
             return True
         else:
-            transaction_state["phase"] = "abort"
-            # Abort for all participants that responded to prepare
-            for i, service in enumerate(participants):
-                if i in transaction_state["ready_participants"]:
-                    try:
-                        service.Abort(common.AbortRequest(
-                            order_id=order_id), timeout=2)
-                    except Exception as e:
-                        print(f"Abort message failed for participant {i}: {e}")
-                        # Continue with other aborts even if one fails
-
-            print(f"Transaction aborted for order {order_id}")
+            for service in participants:
+                service.Abort(common.AbortRequest(order_id=order_id))
+            print("Transaction aborted")
             return False
 
     def run(self):
@@ -208,7 +149,6 @@ def get_all_executor_ids():
     for container in client.containers.list(all=True):
         if container.labels.get('com.docker.compose.service') == 'order_executor':
             known_ids.append(container.short_id)
-
     assert executor_id in known_ids
     return executor_id, known_ids
 

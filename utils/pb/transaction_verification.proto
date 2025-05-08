@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package verification;
+
+import "common.proto";
+
+service VerificationService {
+    rpc CreditCardVerification (common.Request) returns (common.Response);
+    rpc UserDataVerification (common.Request) returns (common.Response);
+    rpc initVerification (common.InitAllInfoRequest) returns (common.Empty);
+    rpc BookListNotEmtpy (common.Request) returns (common.Response);
+}
+
+message InitRequest {
+    string order_id = 1;
+    common.AllInfoRequest transaction_request = 2;
+}

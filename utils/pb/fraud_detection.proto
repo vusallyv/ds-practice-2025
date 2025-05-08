@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package fraud;
+
+import "common.proto";
+
+service FraudService {
+    rpc SayFraud (common.Request) returns (OrderResponse);
+    rpc InitVerification (common.InitAllInfoRequest) returns (common.Empty);
+    rpc CheckUserData (common.Request) returns (common.Response);
+    rpc CheckCreditCard (common.Request) returns (common.Response);
+}
+
+message OrderResponse {
+    bool is_fraud = 1;
+    string message = 2;
+}

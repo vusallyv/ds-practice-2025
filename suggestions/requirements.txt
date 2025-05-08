@@ -1,5 +1,5 @@
-grpcio==1.60.0
-grpcio-tools==1.60.0
-protobuf==4.25.2
+grpcio==1.70.0
+grpcio-tools==1.70.0
+protobuf==5.29.3
 watchdog==6.0.0
-google-generativeai
+pydantic-ai==0.1.10

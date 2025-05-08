@@ -6,10 +6,10 @@ FROM python:3.11
 WORKDIR /app
 
 # Copy the requirements file to the working directory
-COPY ./order_executor/requirements.txt .
+COPY ./books_database/requirements.txt .
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set the command to run the application
-CMD python utils/other/hotreload.py "order_executor/src/app.py"
+CMD python utils/other/hotreload.py "books_database/src/app.py"

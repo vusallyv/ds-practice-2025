@@ -1,7 +1,7 @@
 import sys
 import time
 import subprocess
-from watchdog.observers import Observer
+from watchdog.observers.polling import PollingObserver
 from watchdog.events import FileSystemEventHandler
 
 
@@ -56,7 +56,7 @@ class OnAnyModifiedFileHandler(FileSystemEventHandler):
 def main(script):
     process = subprocess.Popen([sys.executable, script])  # Start the script
     event_handler = OnAnyModifiedFileHandler(script, process)
-    observer = Observer()
+    observer = PollingObserver()
     observer.schedule(event_handler, DIR_TO_WATCH, recursive=True)
     observer.start()
 

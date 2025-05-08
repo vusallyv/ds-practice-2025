@@ -18,7 +18,7 @@ python -m pip install grpcio-tools
 Then, you can generate the gRPC Python code using the following command:
 
 ```bash
-python -m grpc_tools.protoc -I. --python_out=. --pyi_out=. --grpc_python_out=. ./yourprotofile.proto
+python -m grpc_tools.protoc -I. --python_out=. --pyi_out=. --grpc_python_out=. ./*.proto
 ```
 
 It should generate 3 files: `yourprotofile_pb2.py`, `yourprotofile_pb2_grpc.py` and `yourprotofile_pb2.pyi`. The generated code will be located in the same folder as the `.proto` file. You can use the generated code to implement the gRPC server and client code. Check the example app code (f.e. the orchestrator app) and the practice session guide for more information.

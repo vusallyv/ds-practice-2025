@@ -1,0 +1,40 @@
+
+## Analysis of Coordinator Failure in Two-Phase Commit Protocol
+
+In the current implementation, the `OrderExecutorService` acts as the coordinator in the two-phase commit protocol. If this coordinator fails during the protocol execution, several issues can arise:
+
+### Failure Scenarios and Consequences:
+
+1. **Failure after PREPARE phase, before sending COMMIT/ABORT decisions**:
+    - Participants remain in a prepared state, holding resources locked
+    - The transaction is left in an indeterminate state
+    - Resources remain locked indefinitely, causing system availability issues
+
+2. **Failure during COMMIT phase, after sending some commits**:
+    - Partial commit scenario - some participants commit, others don't
+    - System left in an inconsistent state
+    - Data integrity compromised
+
+3. **Failure before recording decision**:
+    - When coordinator recovers, it won't know what decision was made
+    - Cannot reliably complete the transaction
+
+### Solution: Coordinator Recovery Protocol
+
+1. **Persistent Transaction Log**:
+    - Coordinator should maintain durable logs of transaction states
+    - Log updates must occur before sending messages to participants
+
+2. **Recovery Coordinator**:
+    - Implement a backup coordinator with access to the transaction logs
+    - Use leader election to select a new coordinator if primary fails
+
+3. **Termination Protocol**:
+    - Allow participants to communicate with each other if coordinator fails
+    - Participants can collectively determine transaction outcome
+
+4. **Timeouts and Inquiries**:
+    - Participants should timeout and query other participants about transaction status
+    - Implement a "cooperative termination protocol" among participants
+
+This approach ensures that transactions can complete even when the coordinator fails, maintaining system consistency and availability.

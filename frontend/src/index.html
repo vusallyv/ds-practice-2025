@@ -74,9 +74,10 @@
 
     <script>
         const items = [
-            { name: "Book A", quantity: 1 },
-            { name: "Book B", quantity: 2 }
-        ];
+            { name: "1984 by George Orwell", quantity: 1 },
+            { name: "A Brave New World by Aldous Huxley", quantity: 2 },
+            { name: "To Kill a Mockingbird by Harper Lee", quantity: 1 },
+            { name: "The Great Gatsby by F. Scott Fitzgerald", quantity: 1 },];
 
         const itemListElement = document.getElementById('itemList');
         items.forEach(item => {
@@ -122,7 +123,7 @@
 
                 const result = await response.json();
                 const responseDiv = document.getElementById('response');
-                
+
                 if (!result.error) {
                     const suggestedBooks = result.suggestedBooks.map(book => `<li>${book.title} by ${book.author}</li>`).join('');
                     responseDiv.innerHTML = `

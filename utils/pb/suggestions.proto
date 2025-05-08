@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package suggestions;
+
+import "common.proto";
+
+service SuggestionService {
+    rpc SaySuggest (common.Request) returns (Suggestions);
+    rpc initSuggestion (common.ItemsInitRequest) returns (common.Empty);
+}
+
+message Book {
+    string bookId = 1;
+    string title = 2;
+    string author = 3;
+}
+
+message Suggestions {
+    repeated Book books = 1;
+    common.VectorClock vector_clock = 2;
+}

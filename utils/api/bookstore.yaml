@@ -122,7 +122,7 @@ components:
           type: string
         status:
           type: string
-          description: 'Order status: "Order Approved" or "Order Rejected". If rejected, suggestedBooks is empty.'
+          description: 'Order status: "Order Approved" if the order is approved, a message with rejection reason if the order is rejected. If rejected, suggestedBooks is empty.'
         suggestedBooks:
           type: array
           items:
